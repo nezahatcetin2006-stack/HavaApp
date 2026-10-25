@@ -36,7 +36,7 @@ class CityViewModel(
 
     // State ViewModel'de MutableStateFlow ile tutulur.
     // Değiştirilebilir alan private'tır; dışarıya yalnızca okunabilir hâli açılır.
-    private val _query = MutableStateFlow(INITIAL_QUERY)
+    private val _query = MutableStateFlow("")
     val query: StateFlow<String> = _query.asStateFlow()
 
     private val _uiState = MutableStateFlow<LoadState<List<City>>>(LoadState.Loading)

@@ -5,7 +5,12 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kampplus.hava.ui.HavaNavHost
+import com.kampplus.hava.ui.SettingsManager
+import com.kampplus.hava.ui.ThemeMode
 import com.kampplus.hava.ui.theme.HavaTheme
 
 /**
@@ -32,7 +37,18 @@ class MainActivity : ComponentActivity() {
 
         // Süslü parantezin içi Compose dünyasıdır.
         setContent {
-            HavaTheme {
+            // Ayarlardaki güncel tema durumunu dinliyoruz
+            val settings by SettingsManager.settings.collectAsStateWithLifecycle()
+
+            // Seçilen tema moduna göre karanlık temanın aktif olup olmayacağını belirliyoruz
+            val isDarkTheme = when (settings.themeMode) {
+                ThemeMode.SYSTEM -> isSystemInDarkTheme()
+                ThemeMode.LIGHT -> false
+                ThemeMode.DARK -> true
+            }
+
+            // Temayı kullanıcının seçimine göre tetikliyoruz
+            HavaTheme(darkTheme = isDarkTheme) {
                 HavaNavHost()
             }
         }

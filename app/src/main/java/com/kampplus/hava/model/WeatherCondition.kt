@@ -1,25 +1,40 @@
 package com.kampplus.hava.model
 
+import com.kampplus.hava.ui.AppLanguage
+
 /**
- * Hava durumunun ekrandaki karşılığı: bir emoji ve Türkçe bir etiket.
+ * Hava durumunun ekrandaki karşılığı: bir emoji, Türkçe ve İngilizce etiketler.
  *
  * Open-Meteo, sıcaklığın yanında bir de `weather_code` gönderir. Bu kod WMO 4677
  * standardındadır ve tek başına bir sayıdır (0, 61, 95...). Kullanıcıya sayı
  * gösteremeyiz; [fromWeatherCode] ile anlaşılır bir görünüme çeviririz.
  */
-enum class WeatherCondition(val emoji: String, val label: String) {
-    CLEAR("☀️", "Açık"),
-    MAINLY_CLEAR("🌤️", "Az bulutlu"),
-    PARTLY_CLOUDY("⛅", "Parçalı bulutlu"),
-    OVERCAST("☁️", "Kapalı"),
-    FOG("🌫️", "Sisli"),
-    DRIZZLE("🌦️", "Çisenti"),
-    RAIN("🌧️", "Yağmurlu"),
-    SNOW("🌨️", "Karlı"),
-    RAIN_SHOWERS("🌦️", "Sağanak yağış"),
-    SNOW_SHOWERS("🌨️", "Kar sağanağı"),
-    THUNDERSTORM("⛈️", "Gök gürültülü fırtına"),
-    UNKNOWN("🌡️", "Bilinmiyor");
+enum class WeatherCondition(
+    val emoji: String,
+    val labelTr: String,
+    val labelEn: String
+) {
+    CLEAR("☀️", "Açık", "Clear"),
+    MAINLY_CLEAR("🌤️", "Az Bulutlu", "Mainly Clear"),
+    PARTLY_CLOUDY("⛅", "Parçalı Bulutlu", "Partly Cloudy"),
+    OVERCAST("☁️", "Kapalı", "Overcast"),
+    FOG("🌫️", "Sisli", "Fog"),
+    DRIZZLE("🌦️", "Çisenti", "Drizzle"),
+    RAIN("🌧️", "Yağmurlu", "Rainy"),
+    SNOW("🌨️", "Karlı", "Snowy"),
+    RAIN_SHOWERS("🌦️", "Sağanak Yağış", "Rain Showers"),
+    SNOW_SHOWERS("🌨️", "Kar Sağanağı", "Snow Showers"),
+    THUNDERSTORM("⛈️", "Gök Gürültülü Fırtına", "Thunderstorm"),
+    UNKNOWN("🌡️", "Bilinmiyor", "Unknown");
+
+    /** Eski kodlarla uyumluluk için varsayılan Türkçe label */
+    val label: String
+        get() = labelTr
+
+    /** Seçilen dile (Türkçe / İngilizce) göre doğru etiketi döndürür */
+    fun getLabel(lang: AppLanguage): String {
+        return if (lang == AppLanguage.ENGLISH) labelEn else labelTr
+    }
 
     companion object {
         /**
