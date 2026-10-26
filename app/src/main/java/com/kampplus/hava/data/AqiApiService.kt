@@ -9,6 +9,6 @@ interface AqiApiService {
     @GET("feed/{city}/")
     suspend fun getAirQualityByCity(
         @Path("city") city: String,
-        @Query("token") token: String
+        @Query("token") token: String,
     ): AirQualityResponse
 }
