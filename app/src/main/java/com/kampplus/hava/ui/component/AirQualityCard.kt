@@ -1,167 +1,115 @@
 package com.kampplus.hava.ui.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kampplus.hava.model.AqiData
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Surface
+import com.kampplus.hava.ui.Strings
 
 @Composable
-fun AirQualityCard(aqiData: AqiData?, modifier: Modifier = Modifier) {
-    if (aqiData == null) return
-
-    val aqi = aqiData.aqi
-    val (statusText, statusDesc, statusColor) = when {
-        aqi <= 50 -> Triple(
-            "İyi",
-            "Hava kalitesi tatmin edici ve hava kirliliği çok az risk taşıyor veya hiç risk taşımıyor.",
-            Color(0xFF4CAF50)
-        )
-        aqi <= 100 -> Triple(
-            "Orta",
-            "Hava kalitesi kabul edilebilir; ancak hassas bireyler için hafif bir sağlık kaygısı oluşabilir.",
-            Color(0xFFFFB300)
-        )
-        aqi <= 150 -> Triple(
-            "Hassas Gruplar İçin Sağlıksız",
-            "Hassas gruplar sağlık etkileri yaşayabilir. Genel halkın etkilenmesi olası değildir.",
-            Color(0xFFFF9800)
-        )
-        aqi <= 200 -> Triple(
-            "Sağlıksız",
-            "Herkes sağlık etkileri yaşamaya başlayabilir; hassas gruplar daha ciddi etkiler yaşayabilir.",
-            Color(0xFFF44336)
-        )
-        aqi <= 300 -> Triple(
-            "Çok Sağlıksız",
-            "Sağlık uyarısı: Herkes daha ciddi sağlık etkileri yaşayabilir.",
-            Color(0xFF9C27B0)
-        )
-        else -> Triple(
-            "Tehlikeli",
-            "Sağlık alarmı: Herkesin etkilenmesi muhtemel acil durum koşulları.",
-            Color(0xFF795548)
-        )
-    }
-
+fun AirQualityCard(
+    aqiData: AqiData?,
+    strings: Strings,
+    modifier: Modifier = Modifier,
+) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-        )
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+        ),
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(18.dp)
+                .padding(16.dp),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(
-                        text = aqiData.city?.name?.substringBefore(",") ?: "Hava Kalitesi",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "İstasyon Ölçümü",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-                Surface(
-                    shape = RoundedCornerShape(10.dp),
-                    color = statusColor.copy(alpha = 0.15f)
-                ) {
-                    Text(
-                        text = statusText,
-                        color = statusColor,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            Row(
-                verticalAlignment = Alignment.Bottom,
-                modifier = Modifier.fillMaxWidth()
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = "$aqi",
-                    fontSize = 46.sp,
-                    fontWeight = FontWeight.Black,
-                    color = statusColor
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "AQI",
-                    fontSize = 18.sp,
+                    text = strings.aqiSectionTitle,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 6.dp)
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
+                Text(
+                    text = "🍃",
+                    fontSize = 20.sp,
                 )
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = statusDesc,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            // Kirleticilerin detay ızgarası (PM2.5, PM10, O3, NO2)
-            val iaqi = aqiData.iaqi
-            if (iaqi != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
-                Spacer(modifier = Modifier.height(12.dp))
-
+            if (aqiData == null) {
                 Text(
-                    text = "Kirletici Partikül Değerleri",
-                    style = MaterialTheme.typography.labelMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.primary
+                    text = strings.aqiNoData,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
-
-                Spacer(modifier = Modifier.height(8.dp))
+            } else {
+                val aqi = aqiData.aqi
+                val (statusText, statusColor) = getAqiStatus(aqi, strings)
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    iaqi.pm25?.let { MetricItem("PM2.5", "${it.value.toInt()} µg/m³") }
-                    iaqi.pm10?.let { MetricItem("PM10", "${it.value.toInt()} µg/m³") }
-                    iaqi.o3?.let { MetricItem("Ozon (O3)", "${it.value.toInt()} ppb") }
-                    iaqi.no2?.let { MetricItem("NO2", "${it.value.toInt()} ppb") }
+                    Box(
+                        modifier = Modifier
+                            .size(14.dp)
+                            .clip(CircleShape)
+                            .background(statusColor),
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "$aqi - $statusText",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+                HorizontalDivider(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    AqiMetricItem(label = strings.aqiPm25Label, value = aqiData.iaqi?.pm25?.value)
+                    AqiMetricItem(label = strings.aqiPm10Label, value = aqiData.iaqi?.pm10?.value)
+                    AqiMetricItem(label = strings.aqiO3Label, value = aqiData.iaqi?.o3?.value)
+                    AqiMetricItem(label = strings.aqiNo2Label, value = aqiData.iaqi?.no2?.value)
                 }
             }
         }
@@ -169,19 +117,44 @@ fun AirQualityCard(aqiData: AqiData?, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun MetricItem(label: String, value: String) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = value,
-            style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+private fun AqiMetricItem(
+    label: String,
+    value: Double?,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        modifier = modifier,
+        color = Color.Transparent,
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = value?.let { "%.1f".format(it) } ?: "-",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+private fun getAqiStatus(
+    aqi: Int,
+    strings: Strings,
+): Pair<String, Color> {
+    return when {
+        aqi <= 50 -> strings.aqiStatusGood to Color(0xFF4CAF50)
+        aqi <= 100 -> strings.aqiStatusModerate to Color(0xFFFFEB3B)
+        aqi <= 150 -> strings.aqiStatusSensitive to Color(0xFFFF9800)
+        aqi <= 200 -> strings.aqiStatusUnhealthy to Color(0xFFF44336)
+        aqi <= 300 -> strings.aqiStatusVeryUnhealthy to Color(0xFF9C27B0)
+        else -> strings.aqiStatusHazardous to Color(0xFF7E0023)
     }
 }

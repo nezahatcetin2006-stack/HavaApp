@@ -18,10 +18,10 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class CityViewModel(
-    private val repository: CityRepository = OpenMeteoCityRepository()
+    private val repository: CityRepository = OpenMeteoCityRepository(),
 ) : ViewModel() {
 
-    private val _query = MutableStateFlow("")
+    private val _query = MutableStateFlow(DEFAULT_CITY)
     val query: StateFlow<String> = _query.asStateFlow()
 
     private val _uiState = MutableStateFlow<LoadState<List<City>>>(LoadState.Loading)
@@ -39,7 +39,7 @@ class CityViewModel(
     }
 
     fun search() {
-        val currentQuery = _query.value.trim()
+        val currentQuery = _query.value.trim().ifEmpty { DEFAULT_CITY }
 
         viewModelScope.launch {
             _uiState.value = LoadState.Loading
@@ -64,7 +64,7 @@ class CityViewModel(
             try {
                 val response = AqiRetrofitClient.apiService.getAirQualityByCity(
                     city = cityName.trim(),
-                    token = WAQI_API_TOKEN
+                    token = WAQI_API_TOKEN,
                 )
                 if (response.status == "ok") {
                     _aqiState.value = response.data
@@ -80,6 +80,7 @@ class CityViewModel(
 
     companion object {
         private const val TAG = "CityViewModel"
+        private const val DEFAULT_CITY = "İstanbul"
         private const val WAQI_API_TOKEN = "f9aa67a3006dc462e707f101f7d1a1e1434097ba"
     }
 }
