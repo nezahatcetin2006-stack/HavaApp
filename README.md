@@ -1,101 +1,127 @@
-<div align="center">
+# Hava - Modern Hava Durumu ve Planlama Uygulaması
 
-<img src="docs/qr-repo.png" alt="github.com/tc-yusufburakdemir/weather-app adresinin QR kodu" width="220">
+**Hava**, modern Android geliştirme standartları (Kotlin ve Jetpack Compose) kullanılarak geliştirilmiş; anlık hava durumu takibi, hava kalitesi indeksi (AQI) analizleri, dinamik giyim tavsiyeleri ve planlama araçları sunan bir mobil uygulamadır.
 
-**Repoya erişim**
+---
 
-[github.com/tc-yusufburakdemir/weather-app](https://github.com/tc-yusufburakdemir/weather-app)
+## 🌟 Öne Çıkan Özellikler
 
-</div>
+### 📍 Şehir Arama ve Hızlı Erişim
+- **Gerçek Zamanlı Arama:** Minimum 2 karakter girişiyle devreye giren debounced arama altyapısı.
+- **Hızlı Erişim Kartları:** Hatay, İstanbul ve Ankara gibi varsayılan şehirlerin yanı sıra kullanıcının dinamik olarak yeni şehirler ekleyebileceği yatay kaydırmalı erişim listesi.
+- **Detaylı Bölge Bilgisi:** Arama sonuçlarında şehir adı, idari bölge (admin1) ve ülke bilgileriyle net lokasyon ayrımı.
 
-# Hava — Şehir Arama ve Hava Tahmini
+### 🌤️ Hava Durumu Tahmini ve Dinamik Görsellik
+- **Saatlik ve 7 Günlük Tahmin:** Gün içi sıcaklık değişimleri ve haftalık hava trendleri.
+- **Detaylı Metrikler:** Hissedilen sıcaklık, nem oranı ve rüzgâr hızı verileri.
+- **Dinamik Gradyan ve Temalandırma:** Fırtına, kar, yağmur veya açık hava durum kodlarına göre gerçek zamanlı değişen arka plan gradyanları (`getWeatherGradient`).
 
-Bilişim Kampı Android eğitiminin **referans çözümü**. Open-Meteo servisinden şehir arar, seçilen şehrin anlık durumunu, saatlik ve 7 günlük tahminini gösterir; yükleniyor / veri / boş / hata durumlarının tamamını ele alır.
+### 🍃 Hava Kalitesi (AQI) ve Kirletici Raporu
+- **Hava Kalitesi İndeksi:** Şehirlere göre gerçek zamanlı AQI seviyesi sınıflandırması (*İyi, Orta, Hassas Gruplar İçin Sağlıksız, Sağlıksız, Çok Sağlıksız, Tehlikeli*).
+- **Ayrıntılı Kirletici Dökümü:** PM2.5 (ince toz), PM10 (kaba toz), Ozon (O3) ve Azot Dioksit (NO2) değerlerinin takibi.
+- **Sağlık Tavsiyeleri:** Mevcut hava kirliliği seviyesine göre açık hava aktiviteleri ve hassas gruplara özel uyarılar.
 
-Mimari ayrıntıları için [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+### 👔 Akıllı Giyim Tavsiyeleri (Clothing Advice)
+- Hava kodu (yağmur, kar, fırtına) ve anlık sıcaklık derecesine göre kullanıcıya ne giymesi gerektiğini söyleyen dinamik tavsiye motoru (*"Dondurucu soğuk", "Serin hava", "Güneşli ve sıcak"* vb.).
 
-**Teknoloji:** Kotlin · Jetpack Compose (Material 3) · ViewModel + StateFlow · Coroutines · Retrofit + Gson · Navigation Compose
+### ⚙️ Kişiselleştirme ve Ayarlar
+- **Çoklu Dil Desteği:** Türkçe ve İngilizce tam yerelleştirme (Localization).
+- **Sıcaklık Birimi:** Santigrat (°C) ve Fahrenheit (°F) arasında tek dokunuşla geçiş.
+- **Tema:** Sistem moduna tam uyumlu Koyu (Dark) ve Açık (Light) tema entegrasyonu.
 
-## Mimari — üç katman
+---
 
-*UI görünümü çizer, ViewModel state'i yönetir, Repository veriye erişir.*
+## 🛠️ Mimari ve Kullanılan Teknolojiler
 
+- **Dil:** Kotlin
+- **Kullanıcı Arayüzü (UI):** Jetpack Compose, Material 3
+- **Mimari Desen:** MVVM (Model-View-ViewModel) + Single Source of Truth
+- **Reaktif Durum Yönetimi:** Kotlin Coroutines, StateFlow, `collectAsStateWithLifecycle`
+- **Ağ İstemcisi:** Retrofit, OkHttp
+- **Asenkron Arama:** Coroutines `delay(300)` / `delay(350)` ile optimize debounce mekanizması
+- **Kod Kalitesi ve Biçimlendirme:** Spotless + Ktlint (Maksimum 140 karakter satır sınırı, açık import yönetimi)
+- **Sürekli Entegrasyon (CI):** GitHub Actions (`spotlessCheck` ve otomatik derleme/test süreçleri)
+
+---
+
+## 📂 Proje Dizin Yapısı
+
+```text
+app/src/main/java/com/kampplus/hava/
+├── data/
+│   ├── ApiClient.kt             # Retrofit istemci konfigürasyonları
+│   ├── AqiApiService.kt         # Hava kalitesi API servisleri
+│   ├── CityApi.kt               # Şehir arama servisleri
+│   └── ForecastApi.kt           # Tahmin verisi servisleri
+├── model/
+│   ├── AqiData.kt               # AQI ve kirletici veri modelleri
+│   ├── City.kt                  # Şehir modelleri
+│   └── ForecastResponse.kt      # Hava durumu yanıt modelleri
+├── ui/
+│   ├── city/
+│   │   ├── CityScreen.kt        # Ana arama ve hızlı erişim ekranı
+│   │   ├── CityViewModel.kt     # Şehir ve AQI durum yönetimi
+│   │   └── PlanBottomSheet.kt   # Planlama alt sayfası
+│   ├── component/
+│   │   ├── AirQualityCard.kt
+│   │   ├── AirQualityDetailSheet.kt # AQI detay modalı
+│   │   ├── EmptyView.kt         # Boş durum ekranı
+│   │   └── ErrorView.kt         # Hata durum ekranı
+│   ├── forecast/
+│   │   ├── ClothingAdvice.kt    # Giyim öneri motoru ve gradyanlar
+│   │   └── ForecastScreen.kt    # Tahmin detay ekranı
+│   ├── theme/                   # Material 3 renk, tipografi ve tema tanımları
+│   ├── AppLanguage.kt           # Dil enum tanımları
+│   ├── AppStrings.kt            # Yerelleştirilmiş metin kaynakları (Tr/En)
+│   ├── LoadState.kt             # Yükleme/Başarı/Hata durum sarmalayıcısı
+│   └── SettingsBottomSheet.kt   # Ayarlar alt sayfası
+└── MainActivity.kt              # Uygulama giriş noktası ve NavHost
 ```
-UI (Composable)  →  ViewModel (StateFlow)  →  Repository (suspend)  →  Retrofit → Open-Meteo
-```
 
-```
-com.kampplus.hava
-├── MainActivity.kt            Uygulamanın kapısı
-├── model/                     Veri neye benzer?
-│   ├── City.kt                City + CitySearchResponse
-│   ├── Forecast.kt            Forecast + Current/Hourly/Daily
-│   └── WeatherCondition.kt    WMO kodu → emoji + Türkçe etiket
-├── data/                      Veri nereden gelir?
-│   ├── ApiClient.kt           object + Retrofit kurulumu
-│   ├── CityApi.kt             @GET v1/search
-│   ├── ForecastApi.kt         @GET v1/forecast
-│   ├── ForecastResponse.kt    DTO + sütun→satır çevrimi
-│   ├── CityRepository.kt      suspend search()
-│   └── WeatherRepository.kt   suspend getForecast()
-└── ui/                        Ne çizilir, ne zaman değişir?
-    ├── LoadState.kt           Loading / Success / Empty / Error
-    ├── HavaNavHost.kt         iki ekran arası geçiş
-    ├── city/                  CityScreen · CityViewModel · CityCard
-    ├── forecast/              ForecastScreen · ForecastViewModel
-    ├── component/             ShimmerList · EmptyView · ErrorView
-    └── theme/                 Color · Theme · Type
-```
+---
 
-## API — Open-Meteo (anahtar gerekmez)
+## 🚀 Kurulum ve Çalıştırma
 
-| Amaç | Çağrı |
-|---|---|
-| Şehir arama | `https://geocoding-api.open-meteo.com/v1/search?name=Ankara&count=10&language=tr` |
-| Tahmin | `https://api.open-meteo.com/v1/forecast?latitude=..&longitude=..&current=..&hourly=..&daily=..&forecast_days=7&timezone=auto` |
+Projeyi yerel makinenizde derlemek ve çalıştırmak için aşağıdaki adımları izleyebilirsiniz:
 
-- Sonuç yoksa arama yanıtında `results` alanı **hiç gelmez** → Boş (Empty) durumu.
-- Tahmin yanıtı **sütun** biçimindedir: `hourly.time[i]` ile `hourly.temperature_2m[i]` aynı saate aittir.
-- `weather_code` WMO standardındadır (0 açık, 61 yağmur, 95 fırtına…); `WeatherCondition.fromWeatherCode` ile görünüme çevrilir.
-- Ücretsiz kullanım ticari olmayan projeler içindir (~10.000 istek/gün).
+### Gereksinimler
+- **Android Studio:** Ladybug (2024.2.1) veya daha güncel bir sürüm
+- **JDK:** Android Studio Embedded JDK (Java 17 veya 21 önerilir)
+- **Min SDK:** 26 (Android 8.0 Oreo)
+- **Target / Compile SDK:** 34 veya 35
 
-## Çalıştırma
+### Adım Adım Kurulum
 
-```bash
-./gradlew assembleDebug        # debug APK
-./gradlew testDebugUnitTest    # unit testler
-./gradlew spotlessApply        # ktlint formatı (denetim için spotlessCheck)
-./gradlew assembleRelease      # release APK (R8 açık)
-```
+1. **Depoyu Klonlayın:**
+   ```bash
+   git clone [https://github.com/kullanici-adiniz/havadurumuapp.git](https://github.com/kullanici-adiniz/havadurumuapp.git)
+   cd havadurumuapp
+   ```
 
-Android SDK yolunu `local.properties` içinde `sdk.dir=...` ile veya `ANDROID_HOME` ortam değişkeniyle verin.
+2. **Android Studio ile Açın:**
+   Android Studio'yu açıp `Open` seçeneğiyle indirdiğiniz proje klasörünü seçin. Gradle senkronizasyonunun (Sync) tamamlanmasını bekleyin.
 
-## Checkpoint'ler
+3. **Kod Biçimlendirme Kontrolü (Spotless):**
+   Projede kod standartlarını doğrulamak veya otomatik düzeltmek için terminalden veya Android Studio Gradle menüsünden şu komutu çalıştırabilirsiniz:
+   ```bash
+   ./gradlew spotlessApply
+   ```
+   *(Windows PowerShell için: `.\gradlew spotlessApply`)*
 
-Her ders bloğunun sonunda projenin olması gereken hâli ayrı bir branch'tedir. `cpN` = **Uygulama N+1**.
+4. **Uygulamayı Çalıştırın:**
+   Bir Android sanal cihazı (Emulator) veya USB hata ayıklaması açık bir fiziksel cihaz bağlayarak Android Studio üzerinden `Run 'app'` (yeşil oynat butonu) ile uygulamayı başlatın.
 
-| Branch | Karşılığı | İçerik |
-|---|---|---|
-| `cp1-baslangic` | — | Boş Empty Activity projesi, "Merhaba Kamp!" |
-| `cp1-bitis` / `cp2-baslangic` | Uygulama 2 | Sabit şehir listesi, `CityCard` + plaka rozeti, `LazyColumn`, tıklamada `Log.d` |
-| `cp2-bitis` / `cp3-baslangic` | Uygulama 3 | Arama kutusu, `rememberSaveable`, filtre, boş durum, `CityViewModel`, `model/data/ui` paketleri |
-| `cp3-bitis` / `cp4-baslangic` | Uygulama 4 | Retrofit + Gson, `ApiClient`, `CityRepository`, dört durum, Shimmer, `try/catch` |
-| `cp4-bitis` (= `main`) | Uygulama 5 | Tahmin ekranı + navigasyon, cila, testler |
+---
 
-Bir bloğu yetiştiremediyseniz kodunuzu `katilimci/<ad>/cpN` branch'ine kaydedip sonraki bloğun başlangıç branch'ine geçin.
+## 🧪 Kod Standartları ve Kalite Kontrolü
 
-`archive/v1-clean-arch` branch'i, projenin önceki Clean Architecture + Hilt + Room sürümünü saklar.
+Proje genelinde kod kalitesi ve tutarlılığı **Spotless (Ktlint)** ile denetlenmektedir:
+- **Wildcard Import Yasağı:** Yıldızlı (`*`) import kullanılmaz, tüm sınıflar tek tek açıkça import edilir.
+- **Satır Sınırı:** Hiçbir kod satırı 140 karakteri aşamaz (`max-line-length`).
+- **CI Doğrulaması:** GitHub deposuna gönderilen her `commit` ve açılan her `Pull Request` için GitHub Actions otomatik olarak `:spotlessCheck` ve birim testlerini çalıştırarak kalite kontrolü sağlar.
 
-## Testler
+---
 
-| Test | Neyi korur |
-|---|---|
-| `WeatherConditionTest` | WMO kod → görünüm eşlemesi |
-| `CityApiTest` | Gson `@SerializedName` eşlemesi (sessizce bozulur) |
-| `ForecastApiTest` | Sütun → satır çevrimi (index kayması hata vermez) |
-| `CityViewModelTest` | Dört durum + "Tekrar dene" |
-| `ForecastViewModelTest` | Rota parametreleri + durumlar |
+## 📄 Lisans
 
-## Release imzası
-
-`keystore.properties.example` dosyasını `keystore.properties` olarak kopyalayıp doldurun (repoya girmez). Dosya yoksa release APK debug anahtarıyla imzalanır.
+Bu proje kişisel gelişim ve eğitim amacıyla açık kaynak olarak geliştirilmiştir.
