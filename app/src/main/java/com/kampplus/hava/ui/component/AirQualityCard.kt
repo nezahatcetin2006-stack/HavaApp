@@ -20,6 +20,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kampplus.hava.model.AqiData
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Surface
 
 @Composable
 fun AirQualityCard(aqiData: AqiData?, modifier: Modifier = Modifier) {
