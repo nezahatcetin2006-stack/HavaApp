@@ -21,9 +21,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
@@ -37,6 +39,7 @@ import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -71,12 +74,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kampplus.hava.R
 import com.kampplus.hava.data.ApiClient
+import com.kampplus.hava.model.AqiData
 import com.kampplus.hava.model.City
 import com.kampplus.hava.ui.AppLanguage
 import com.kampplus.hava.ui.AppStrings
 import com.kampplus.hava.ui.LoadState
 import com.kampplus.hava.ui.SettingsBottomSheet
 import com.kampplus.hava.ui.SettingsManager
+import com.kampplus.hava.ui.component.AirQualityDetailSheet
 import com.kampplus.hava.ui.component.EmptyView
 import com.kampplus.hava.ui.component.ErrorView
 import com.kampplus.hava.ui.component.ShimmerList
@@ -114,13 +119,19 @@ val DEFAULT_QUICK_ACCESS_CITIES = listOf(
 )
 
 @Composable
-fun CityRoute(onCityClick: (City) -> Unit, modifier: Modifier = Modifier, viewModel: CityViewModel = viewModel()) {
+fun CityRoute(
+    onCityClick: (City) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: CityViewModel = viewModel()
+) {
     val query by viewModel.query.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val aqiData by viewModel.aqiState.collectAsStateWithLifecycle()
 
     CityScreen(
         query = query,
         uiState = uiState,
+        aqiData = aqiData,
         onQueryChange = { newQuery ->
             viewModel.onQueryChange(newQuery)
             if (newQuery.trim().length >= 2) {
@@ -128,6 +139,9 @@ fun CityRoute(onCityClick: (City) -> Unit, modifier: Modifier = Modifier, viewMo
             }
         },
         onSearch = viewModel::search,
+        onSelectAirQualityCity = { selectedCityName ->
+            viewModel.fetchAirQuality(selectedCityName)
+        },
         onCityClick = onCityClick,
         modifier = modifier
     )
@@ -138,14 +152,42 @@ fun CityRoute(onCityClick: (City) -> Unit, modifier: Modifier = Modifier, viewMo
 fun CityScreen(
     query: String,
     uiState: LoadState<List<City>>,
+    aqiData: AqiData?,
     onQueryChange: (String) -> Unit,
     onSearch: () -> Unit,
+    onSelectAirQualityCity: (String) -> Unit,
     onCityClick: (City) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var showPlanSheet by remember { mutableStateOf(false) }
     var showSettingsSheet by remember { mutableStateOf(false) }
     var showAddCityDialog by remember { mutableStateOf(false) }
+
+    var aqiQuery by remember { mutableStateOf("") }
+    var aqiSearchResults by remember { mutableStateOf<List<City>>(emptyList()) }
+    var isAqiSearching by remember { mutableStateOf(false) }
+    var selectedAqiCityName by remember { mutableStateOf<String?>(null) }
+    var showAqiDetailSheet by remember { mutableStateOf(false) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(aqiQuery) {
+        val trimmed = aqiQuery.trim()
+        if (trimmed.length >= 2) {
+            isAqiSearching = true
+            delay(300)
+            try {
+                val response = ApiClient.cityApi.search(name = trimmed)
+                aqiSearchResults = response.results ?: emptyList()
+            } catch (e: Exception) {
+                aqiSearchResults = emptyList()
+            } finally {
+                isAqiSearching = false
+            }
+        } else {
+            aqiSearchResults = emptyList()
+            isAqiSearching = false
+        }
+    }
 
     val quickAccessCities = remember {
         mutableStateListOf<City>().apply {
@@ -157,16 +199,13 @@ fun CityScreen(
     val strings = AppStrings.get(settings.language)
     val isEn = settings.language == AppLanguage.ENGLISH
 
-    // Uygulama ve sistem ayarını birlikte dinleyen gerçek karanlık mod kontrolü
     val isDark = isSystemInDarkTheme()
 
-    // EN DIŞ KATMAN: Görselin en tepeye, durum çubuğunun arkasına kadar uzanmasını sağlar
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // 1. TAM EKRAN ARKA PLAN: Sadece arama boşken en tepeden en aşağıya kadar çizilir
         if (query.trim().isBlank()) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Image(
@@ -178,7 +217,6 @@ fun CityScreen(
                     contentScale = ContentScale.Crop
                 )
 
-                // Karanlık moddaysa yazıları netleştirmek için koyu filtre bindirilir
                 if (isDark) {
                     Box(
                         modifier = Modifier
@@ -189,7 +227,6 @@ fun CityScreen(
             }
         }
 
-        // 2. ŞEFFAF İÇERİK KATMANI
         Scaffold(
             containerColor = Color.Transparent,
             topBar = {
@@ -202,7 +239,7 @@ fun CityScreen(
                         IconButton(onClick = { showSettingsSheet = true }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
-                                contentDescription = if (isEn) "Settings" else "Ayarlar"
+                                contentDescription = strings.settingsTitle
                             )
                         }
                     }
@@ -230,6 +267,7 @@ fun CityScreen(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .verticalScroll(rememberScrollState())
                                 .padding(horizontal = 20.dp, vertical = 12.dp),
                             horizontalAlignment = Alignment.Start
                         ) {
@@ -320,7 +358,88 @@ fun CityScreen(
                                 )
                             }
 
-                            Spacer(modifier = Modifier.height(20.dp))
+                            Spacer(modifier = Modifier.height(26.dp))
+
+                            // --- HAVA KALİTESİ ARAMA ALANI (DİL DESTEKLİ) ---
+                            Text(
+                                text = strings.aqiSectionTitle,
+                                style = MaterialTheme.typography.titleSmall,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            OutlinedTextField(
+                                value = aqiQuery,
+                                onValueChange = { aqiQuery = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                placeholder = { Text(strings.aqiSearchPlaceholder) },
+                                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
+                                trailingIcon = {
+                                    if (aqiQuery.isNotEmpty()) {
+                                        IconButton(onClick = {
+                                            aqiQuery = ""
+                                            aqiSearchResults = emptyList()
+                                        }) {
+                                            Icon(Icons.Default.Clear, contentDescription = null)
+                                        }
+                                    }
+                                },
+                                singleLine = true,
+                                shape = RoundedCornerShape(14.dp)
+                            )
+
+                            if (isAqiSearching) {
+                                Spacer(modifier = Modifier.height(6.dp))
+                                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                            }
+
+                            // Eşleşen Şehirler (Aşağıya açılan canlı liste)
+                            if (aqiSearchResults.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Card(
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                    ),
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Column(modifier = Modifier.padding(6.dp)) {
+                                        aqiSearchResults.take(5).forEach { city ->
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        keyboardController?.hide()
+                                                        selectedAqiCityName = city.name
+                                                        aqiSearchResults = emptyList()
+                                                        aqiQuery = ""
+                                                        onSelectAirQualityCity(city.name)
+                                                        showAqiDetailSheet = true
+                                                    }
+                                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(text = "🍃", fontSize = 16.sp)
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Column {
+                                                    Text(
+                                                        text = city.name,
+                                                        style = MaterialTheme.typography.bodyMedium,
+                                                        fontWeight = FontWeight.SemiBold
+                                                    )
+                                                    Text(
+                                                        text = "${city.admin1 ?: ""}, ${city.country ?: ""}".trim().trim(','),
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            Spacer(modifier = Modifier.height(24.dp))
 
                             ElevatedButton(
                                 onClick = { showPlanSheet = true },
@@ -342,7 +461,10 @@ fun CityScreen(
                                         message = if (isEn) "Check the spelling or try another city." else "Yazımı kontrol et ya da başka bir şehir dene."
                                     )
                                 } else {
-                                    CityList(cities = uiState.data, onCityClick = onCityClick)
+                                    CityList(
+                                        cities = uiState.data,
+                                        onCityClick = onCityClick
+                                    )
                                 }
                             }
                             LoadState.Empty -> EmptyView(
@@ -355,6 +477,21 @@ fun CityScreen(
                 }
             }
         }
+    }
+
+    // ŞEHRE TIKLANDIĞINDA AÇILAN AYRI HAVA KALİTESİ DETAY SAYFASI (DİL DESTEKLİ)
+    if (showAqiDetailSheet && selectedAqiCityName != null) {
+        AirQualityDetailSheet(
+            cityName = selectedAqiCityName!!,
+            aqiData = aqiData,
+            isLoading = aqiData == null,
+            strings = strings,
+            isEn = isEn,
+            onDismiss = {
+                showAqiDetailSheet = false
+                selectedAqiCityName = null
+            }
+        )
     }
 
     if (showAddCityDialog) {
@@ -571,7 +708,11 @@ private fun SearchBar(
 }
 
 @Composable
-private fun CityList(cities: List<City>, onCityClick: (City) -> Unit, modifier: Modifier = Modifier) {
+private fun CityList(
+    cities: List<City>,
+    onCityClick: (City) -> Unit,
+    modifier: Modifier = Modifier
+) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -595,8 +736,10 @@ private fun CityScreenPreview() {
                     City(738648, "Ankara", 41.0050, 39.7269, "TR", "Türkiye", "Trabzon")
                 )
             ),
+            aqiData = null,
             onQueryChange = {},
             onSearch = {},
+            onSelectAirQualityCity = {},
             onCityClick = {}
         )
     }
