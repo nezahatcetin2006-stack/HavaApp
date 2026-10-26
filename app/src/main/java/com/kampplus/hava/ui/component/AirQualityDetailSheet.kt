@@ -1,12 +1,30 @@
 package com.kampplus.hava.ui.component
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.*
+import androidx.compose.material3.BottomSheetDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,14 +37,7 @@ import com.kampplus.hava.ui.Strings
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AirQualityDetailSheet(
-    cityName: String,
-    aqiData: AqiData?,
-    isLoading: Boolean,
-    strings: Strings,
-    isEn: Boolean,
-    onDismiss: () -> Unit
-) {
+fun AirQualityDetailSheet(cityName: String, aqiData: AqiData?, isLoading: Boolean, strings: Strings, isEn: Boolean, onDismiss: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
@@ -214,12 +225,7 @@ fun AirQualityDetailSheet(
 }
 
 @Composable
-private fun DetailMetricBox(
-    title: String,
-    value: String,
-    unit: String,
-    modifier: Modifier = Modifier
-) {
+private fun DetailMetricBox(title: String, value: String, unit: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(16.dp),

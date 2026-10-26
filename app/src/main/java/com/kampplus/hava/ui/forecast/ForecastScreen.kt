@@ -300,12 +300,7 @@ private fun CurrentWeatherHeader(
 
 /** Tekil Cam Metrik Kapsülü */
 @Composable
-private fun MetricCapsule(
-    label: String,
-    value: String,
-    icon: String,
-    modifier: Modifier = Modifier
-) {
+private fun MetricCapsule(label: String, value: String, icon: String, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier.border(
             width = 1.dp,
@@ -342,11 +337,7 @@ private fun MetricCapsule(
 
 /** Cam Efektli Saatlik Tahmin Kartları */
 @Composable
-private fun HourlyRow(
-    hours: List<HourlyForecast>,
-    tempUnit: TempUnit,
-    modifier: Modifier = Modifier
-) {
+private fun HourlyRow(hours: List<HourlyForecast>, tempUnit: TempUnit, modifier: Modifier = Modifier) {
     val now = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS)
     val upcoming = hours.filter { !it.time.isBefore(now) }.take(HOURLY_COUNT)
     LazyRow(

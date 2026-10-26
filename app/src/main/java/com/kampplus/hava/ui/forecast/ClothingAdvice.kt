@@ -31,11 +31,7 @@ data class ClothingAdvice(
 /**
  * Sıcaklık, hava kodu ve seçilen dile (TR / EN) göre tavsiye üretir.
  */
-fun getClothingAdvice(
-    temperature: Double,
-    weatherCode: Int,
-    lang: AppLanguage = AppLanguage.TURKISH
-): ClothingAdvice {
+fun getClothingAdvice(temperature: Double, weatherCode: Int, lang: AppLanguage = AppLanguage.TURKISH): ClothingAdvice {
     val isRainy = weatherCode in listOf(51, 53, 55, 61, 63, 65, 80, 81, 82)
     val isSnowy = weatherCode in listOf(71, 73, 75, 77, 85, 86)
     val isThunder = weatherCode in listOf(95, 96, 99)
@@ -44,47 +40,72 @@ fun getClothingAdvice(
     return when {
         isThunder -> ClothingAdvice(
             title = if (isEn) "Storm Warning!" else "Fırtına Uyarısı!",
-            description = if (isEn) "Thunderstorms expected. Wear waterproof clothes and hold your umbrella tight!" else "Gök gürültülü sağanak var. Su geçirmez giyin ve şemsiyeni sağlam tut!",
+            description = if (isEn) {
+                "Thunderstorms expected. Wear waterproof clothes and hold your umbrella tight!"
+            } else {
+                "Gök gürültülü sağanak var. Su geçirmez giyin ve şemsiyeni sağlam tut!"
+            },
             icon = "⛈️"
         )
         isSnowy -> ClothingAdvice(
             title = if (isEn) "It's Snowing!" else "Kar Yağıyor!",
-            description = if (isEn) "Snowy weather. Grab your heavy coat, boots, beanie, and gloves." else "Hava karlı. Kalın kaban, bot, bere ve eldivenlerini hazırla.",
+            description = if (isEn) {
+                "Snowy weather. Grab your heavy coat, boots, beanie, and gloves."
+            } else {
+                "Hava karlı. Kalın kaban, bot, bere ve eldivenlerini hazırla."
+            },
             icon = "❄️"
         )
         isRainy -> ClothingAdvice(
             title = if (isEn) "Rain Ahead!" else "Yağmur Var!",
-            description = if (isEn) "Wear a raincoat and don't forget to take an umbrella with you." else "Islanmamak için yağmurluk giy ve şemsiyeni yanına almayı sakın unutma.",
+            description = if (isEn) {
+                "Wear a raincoat and don't forget to take an umbrella with you."
+            } else {
+                "Islanmamak için yağmurluk giy ve şemsiyeni yanına almayı sakın unutma."
+            },
             icon = "☔"
         )
         temperature < 5.0 -> ClothingAdvice(
             title = if (isEn) "It's Freezing!" else "Hava Çok Soğuk!",
-            description = if (isEn) "Bone-chilling cold outside. Don't leave without a thick sweater, coat, and scarf." else "Dondurucu bir hava var. Kalın kazak, mont ve atkısız dışarı çıkma.",
+            description = if (isEn) {
+                "Bone-chilling cold outside. Don't leave without a thick sweater, coat, and scarf."
+            } else {
+                "Dondurucu bir hava var. Kalın kazak, mont ve atkısız dışarı çıkma."
+            },
             icon = "🧣"
         )
         temperature in 5.0..14.9 -> ClothingAdvice(
             title = if (isEn) "Chilly Weather" else "Serin Bir Hava",
-            description = if (isEn) "Weather can be deceiving. A thick cardigan or seasonal jacket will do." else "Hava aldatıcı olabilir. Kalın bir hırka veya mevsimlik ceket iyi gider.",
+            description = if (isEn) {
+                "Weather can be deceiving. A thick cardigan or seasonal jacket will do."
+            } else {
+                "Hava aldatıcı olabilir. Kalın bir hırka veya mevsimlik ceket iyi gider."
+            },
             icon = "🧥"
         )
         temperature in 15.0..22.0 -> ClothingAdvice(
             title = if (isEn) "Pleasant Day" else "Hava Çok Tatlı",
-            description = if (isEn) "Mild and comfortable. A long-sleeve t-shirt or casual shirt is ideal." else "Ilık bir gün. Uzun kollu tişört veya rahat bir gömlek ideal.",
+            description = if (isEn) {
+                "Mild and comfortable. A long-sleeve t-shirt or casual shirt is ideal."
+            } else {
+                "Ilık bir gün. Uzun kollu tişört veya rahat bir gömlek ideal."
+            },
             icon = "👔"
         )
         else -> ClothingAdvice(
             title = if (isEn) "Sunny & Hot!" else "Güneşli ve Sıcak!",
-            description = if (isEn) "It's hot. Put on a light t-shirt, sunglasses, and wear sunscreen!" else "Hava sıcak. Rahat bir tişört giy, güneş kremini ve gözlüğünü unutma!",
+            description = if (isEn) {
+                "It's hot. Put on a light t-shirt, sunglasses, and wear sunscreen!"
+            } else {
+                "Hava sıcak. Rahat bir tişört giy, güneş kremini ve gözlüğünü unutma!"
+            },
             icon = "🕶️"
         )
     }
 }
 
 @Composable
-fun ClothingAdviceCard(
-    advice: ClothingAdvice,
-    modifier: Modifier = Modifier
-) {
+fun ClothingAdviceCard(advice: ClothingAdvice, modifier: Modifier = Modifier) {
     Card(
         modifier = modifier
             .fillMaxWidth()

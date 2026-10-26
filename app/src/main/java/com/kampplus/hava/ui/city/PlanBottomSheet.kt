@@ -39,10 +39,7 @@ import com.kampplus.hava.ui.SettingsManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlanBottomSheet(
-    onDismiss: () -> Unit,
-    onNavigateToCity: (City) -> Unit
-) {
+fun PlanBottomSheet(onDismiss: () -> Unit, onNavigateToCity: (City) -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     // Seçili dili dinliyoruz
@@ -210,10 +207,11 @@ fun PlanBottomSheet(
                             shape = RoundedCornerShape(12.dp)
                         ) {
                             Text(
-                                if (isEn)
+                                if (isEn) {
                                     "Check ${destination.city.name} Weather 🌤️"
-                                else
+                                } else {
                                     "${destination.city.name} Hava Durumuna Bak 🌤️"
+                                }
                             )
                         }
                     }

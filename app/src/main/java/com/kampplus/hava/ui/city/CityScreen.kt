@@ -119,11 +119,7 @@ val DEFAULT_QUICK_ACCESS_CITIES = listOf(
 )
 
 @Composable
-fun CityRoute(
-    onCityClick: (City) -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: CityViewModel = viewModel()
-) {
+fun CityRoute(onCityClick: (City) -> Unit, modifier: Modifier = Modifier, viewModel: CityViewModel = viewModel()) {
     val query by viewModel.query.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val aqiData by viewModel.aqiState.collectAsStateWithLifecycle()
@@ -304,12 +300,20 @@ fun CityScreen(
                                             .width(108.dp)
                                             .border(
                                                 width = 1.dp,
-                                                color = if (isDark) Color.White.copy(alpha = 0.15f) else Color.White.copy(alpha = 0.35f),
+                                                color = if (isDark) {
+                                                    Color.White.copy(alpha = 0.15f)
+                                                } else {
+                                                    Color.White.copy(alpha = 0.35f)
+                                                },
                                                 shape = RoundedCornerShape(16.dp)
                                             ),
                                         shape = RoundedCornerShape(16.dp),
                                         colors = CardDefaults.cardColors(
-                                            containerColor = if (isDark) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.40f) else Color.White.copy(alpha = 0.12f)
+                                            containerColor = if (isDark) {
+                                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.40f)
+                                            } else {
+                                                Color.White.copy(alpha = 0.12f)
+                                            }
                                         )
                                     ) {
                                         Column(
@@ -360,7 +364,6 @@ fun CityScreen(
 
                             Spacer(modifier = Modifier.height(26.dp))
 
-                            // --- HAVA KALİTESİ ARAMA ALANI (DİL DESTEKLİ) ---
                             Text(
                                 text = strings.aqiSectionTitle,
                                 style = MaterialTheme.typography.titleSmall,
@@ -393,7 +396,6 @@ fun CityScreen(
                                 LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                             }
 
-                            // Eşleşen Şehirler (Aşağıya açılan canlı liste)
                             if (aqiSearchResults.isNotEmpty()) {
                                 Spacer(modifier = Modifier.height(8.dp))
                                 Card(
@@ -458,7 +460,11 @@ fun CityScreen(
                                 if (uiState.data.isEmpty()) {
                                     EmptyView(
                                         title = if (isEn) "City not found" else "Şehir bulunamadı",
-                                        message = if (isEn) "Check the spelling or try another city." else "Yazımı kontrol et ya da başka bir şehir dene."
+                                        message = if (isEn) {
+                                            "Check the spelling or try another city."
+                                        } else {
+                                            "Yazımı kontrol et ya da başka bir şehir dene."
+                                        }
                                     )
                                 } else {
                                     CityList(
@@ -469,7 +475,11 @@ fun CityScreen(
                             }
                             LoadState.Empty -> EmptyView(
                                 title = if (isEn) "City not found" else "Şehir bulunamadı",
-                                message = if (isEn) "Check the spelling or try another city." else "Yazımı kontrol et ya da başka bir şehir dene."
+                                message = if (isEn) {
+                                    "Check the spelling or try another city."
+                                } else {
+                                    "Yazımı kontrol et ya da başka bir şehir dene."
+                                }
                             )
                             is LoadState.Error -> ErrorView(message = uiState.message, onRetry = onSearch)
                         }
@@ -479,7 +489,6 @@ fun CityScreen(
         }
     }
 
-    // ŞEHRE TIKLANDIĞINDA AÇILAN AYRI HAVA KALİTESİ DETAY SAYFASI (DİL DESTEKLİ)
     if (showAqiDetailSheet && selectedAqiCityName != null) {
         AirQualityDetailSheet(
             cityName = selectedAqiCityName!!,
@@ -526,11 +535,7 @@ fun CityScreen(
 }
 
 @Composable
-fun AddQuickAccessCityDialog(
-    isEn: Boolean,
-    onDismiss: () -> Unit,
-    onCitySelected: (City) -> Unit
-) {
+fun AddQuickAccessCityDialog(isEn: Boolean, onDismiss: () -> Unit, onCitySelected: (City) -> Unit) {
     var searchQuery by remember { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<City>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
@@ -675,13 +680,7 @@ fun AddQuickAccessCityDialog(
 }
 
 @Composable
-private fun SearchBar(
-    query: String,
-    hint: String,
-    onQueryChange: (String) -> Unit,
-    onSearch: () -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun SearchBar(query: String, hint: String, onQueryChange: (String) -> Unit, onSearch: () -> Unit, modifier: Modifier = Modifier) {
     val keyboardController = LocalSoftwareKeyboardController.current
     OutlinedTextField(
         value = query,
@@ -708,11 +707,7 @@ private fun SearchBar(
 }
 
 @Composable
-private fun CityList(
-    cities: List<City>,
-    onCityClick: (City) -> Unit,
-    modifier: Modifier = Modifier
-) {
+private fun CityList(cities: List<City>, onCityClick: (City) -> Unit, modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
@@ -732,8 +727,24 @@ private fun CityScreenPreview() {
             query = "Ankara",
             uiState = LoadState.Success(
                 listOf(
-                    City(323786, "Ankara", 39.91987, 32.85427, "TR", "Türkiye", "Ankara"),
-                    City(738648, "Ankara", 41.0050, 39.7269, "TR", "Türkiye", "Trabzon")
+                    City(
+                        id = 323786,
+                        name = "Ankara",
+                        latitude = 39.91987,
+                        longitude = 32.85427,
+                        countryCode = "TR",
+                        country = "Türkiye",
+                        admin1 = "Ankara"
+                    ),
+                    City(
+                        id = 738648,
+                        name = "Ankara",
+                        latitude = 41.0050,
+                        longitude = 39.7269,
+                        countryCode = "TR",
+                        country = "Türkiye",
+                        admin1 = "Trabzon"
+                    )
                 )
             ),
             aqiData = null,

@@ -7,8 +7,5 @@ import retrofit2.http.Query
 
 interface AqiApiService {
     @GET("feed/{city}/")
-    suspend fun getAirQualityByCity(
-        @Path("city") city: String,
-        @Query("token") token: String,
-    ): AirQualityResponse
+    suspend fun getAirQualityByCity(@Path("city") city: String, @Query("token") token: String): AirQualityResponse
 }

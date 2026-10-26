@@ -92,17 +92,23 @@ object TrStrings : Strings {
     override val aqiO3Label = "Ozon (O3)"
     override val aqiNo2Label = "Azot Dioksit (NO2)"
     override val aqiStatusGood = "İyi"
-    override val aqiDescGood = "Hava kalitesi tatmin edici ve kirlilik sağlık açısından çok az risk taşır veya hiç risk taşımaz."
+    override val aqiDescGood =
+        "Hava kalitesi tatmin edici ve kirlilik sağlık açısından çok az risk taşır veya hiç risk taşımaz."
     override val aqiStatusModerate = "Orta"
-    override val aqiDescModerate = "Hava kalitesi kabul edilebilir. Ancak hava kirliliğine karşı hassas bireyler hafif rahatsızlık yaşayabilir."
+    override val aqiDescModerate =
+        "Hava kalitesi kabul edilebilir. Ancak hava kirliliğine karşı hassas bireyler hafif rahatsızlık yaşayabilir."
     override val aqiStatusSensitive = "Hassas Gruplar İçin Sağlıksız"
-    override val aqiDescSensitive = "Akciğer rahatsızlığı, astım veya alerjisi olanlar risk altındadır. Genel halk genellikle etkilenmez."
+    override val aqiDescSensitive =
+        "Akciğer rahatsızlığı, astım veya alerjisi olanlar risk altındadır. Genel halk genellikle etkilenmez."
     override val aqiStatusUnhealthy = "Sağlıksız"
-    override val aqiDescUnhealthy = "Herkes sağlık etkileri hissetmeye başlayabilir. Hassas grupların açık havada uzun süre kalmaması önerilir."
+    override val aqiDescUnhealthy =
+        "Herkes sağlık etkileri hissetmeye başlayabilir. Hassas grupların açık havada uzun süre kalmaması önerilir."
     override val aqiStatusVeryUnhealthy = "Çok Sağlıksız"
-    override val aqiDescVeryUnhealthy = "Ciddi sağlık uyarısı: Nüfusun genelinde hissedilir etkiler görülebilir."
+    override val aqiDescVeryUnhealthy =
+        "Ciddi sağlık uyarısı: Nüfusun genelinde hissedilir etkiler görülebilir."
     override val aqiStatusHazardous = "Tehlikeli"
-    override val aqiDescHazardous = "Acil sağlık durumu uyarısı! Tüm bireylerin dış ortam aktivitelerinden kaçınması gerekir."
+    override val aqiDescHazardous =
+        "Acil sağlık durumu uyarısı! Tüm bireylerin dış ortam aktivitelerinden kaçınması gerekir."
 }
 
 object EnStrings : Strings {
@@ -140,15 +146,21 @@ object EnStrings : Strings {
     override val aqiO3Label = "Ozone (O3)"
     override val aqiNo2Label = "Nitrogen Dioxide (NO2)"
     override val aqiStatusGood = "Good"
-    override val aqiDescGood = "Air quality is satisfactory, and air pollution poses little or no risk."
+    override val aqiDescGood =
+        "Air quality is satisfactory, and air pollution poses little or no risk."
     override val aqiStatusModerate = "Moderate"
-    override val aqiDescModerate = "Air quality is acceptable. However, unusually sensitive individuals may experience minor symptoms."
+    override val aqiDescModerate =
+        "Air quality is acceptable. However, unusually sensitive individuals may experience minor symptoms."
     override val aqiStatusSensitive = "Unhealthy for Sensitive Groups"
-    override val aqiDescSensitive = "Members of sensitive groups may experience health effects. The general public is less likely to be affected."
+    override val aqiDescSensitive =
+        "Members of sensitive groups may experience health effects. The general public is less likely to be affected."
     override val aqiStatusUnhealthy = "Unhealthy"
-    override val aqiDescUnhealthy = "Everyone may begin to experience health effects. Sensitive groups should avoid prolonged outdoor exposure."
+    override val aqiDescUnhealthy =
+        "Everyone may begin to experience health effects. Sensitive groups should avoid prolonged outdoor exposure."
     override val aqiStatusVeryUnhealthy = "Very Unhealthy"
-    override val aqiDescVeryUnhealthy = "Health alert: The risk of health effects is increased for everyone."
+    override val aqiDescVeryUnhealthy =
+        "Health alert: The risk of health effects is increased for everyone."
     override val aqiStatusHazardous = "Hazardous"
-    override val aqiDescHazardous = "Health warning of emergency conditions: Everyone should avoid all outdoor physical activity."
+    override val aqiDescHazardous =
+        "Health warning of emergency conditions: Everyone should avoid all outdoor physical activity."
 }

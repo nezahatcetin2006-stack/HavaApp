@@ -150,4 +150,3 @@ class CityViewModelTest {
         assertEquals(2, repository.callCount)
     }
 }
-

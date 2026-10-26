@@ -64,7 +64,9 @@ fun SettingsBottomSheet(onDismiss: () -> Unit) {
                         label = { Text(if (settings.language == AppLanguage.TURKISH) mode.titleTr else mode.titleEn) },
                         leadingIcon = if (isSelected) {
                             { Icon(Icons.Default.Check, contentDescription = null) }
-                        } else null
+                        } else {
+                            null
+                        }
                     )
                 }
             }
@@ -91,7 +93,9 @@ fun SettingsBottomSheet(onDismiss: () -> Unit) {
                         label = { Text(if (unit == TempUnit.CELSIUS) strings.celsius else strings.fahrenheit) },
                         leadingIcon = if (isSelected) {
                             { Icon(Icons.Default.Check, contentDescription = null) }
-                        } else null
+                        } else {
+                            null
+                        }
                     )
                 }
             }
@@ -118,7 +122,9 @@ fun SettingsBottomSheet(onDismiss: () -> Unit) {
                         label = { Text(lang.displayName) },
                         leadingIcon = if (isSelected) {
                             { Icon(Icons.Default.Check, contentDescription = null) }
-                        } else null
+                        } else {
+                            null
+                        }
                     )
                 }
             }
